@@ -6,8 +6,29 @@ import geopandas as gp
 import overpy
 
 
+def get_census_block_centroid(geoid):
+    
+    url = 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Census2010/MapServer/18/query'
+    params = {
+        'f': 'json',
+        'where': f"GEOID='{geoid}'",
+        'outFields': 'CENTLAT,CENTLON'
+    }
 
-def get_places_polygon(polygon, tag = "[amenity=restaurant]"):
+    response = requests.get(url, params=params)
+    data = response.json()
+    
+    
+
+    # Extract centroid coordinates from the response
+    centroid_lat = data['features'][0]['attributes']['CENTLAT']
+    centroid_lon = data['features'][0]['attributes']['CENTLON']
+
+    return centroid_lat, centroid_lon
+
+
+
+def get_places_OSM(polygon, tags = ["[amenity=restaurant]"]):
     
     # Convert the nested-list polygon to a one-line string format
     polygon_str = ""
@@ -19,8 +40,8 @@ def get_places_polygon(polygon, tag = "[amenity=restaurant]"):
         polygon_str += str(lon)
 
     # Construct a one-line argument for the overpass api
-    arg_polygon = "node(poly: '" + polygon_str + "')"
-    arg_tag =  tag
+    arg_polygon = f"node(poly: '{polygon_str}')"
+    arg_tag =  ''.join(tags)
     arg_end = "out;"
     arg = arg_polygon + arg_tag + ";" + arg_end
     
@@ -30,6 +51,7 @@ def get_places_polygon(polygon, tag = "[amenity=restaurant]"):
     return result
     
 
+#TODO: Need to be changed when valhalla local server is built
 def get_isochrones(loc_list, mode = "pedestrian", time = 15):
     
     
@@ -44,9 +66,9 @@ def get_isochrones(loc_list, mode = "pedestrian", time = 15):
     return polygon
 
 
-def generate_census_blocks():
+def get_census_blocks(place = 'Chattanooga, TN'):
     
-    Chatt = cenpy.products.Decennial2010().from_place('Chattanooga, TN', level='block')
+    return  cenpy.products.Decennial2010().from_place(place, level='block') 
 
 
 def generate_square_centroids(bbox, square_size = 0.01):
@@ -104,5 +126,13 @@ def mep_computation(O_tj, N_star, N, f, isochrones, e, c, alpha = -0.5, beta = -
         
     return mep
         
+        
+def visualization(blocks, metric):
+    
+    f, ax = plt.subplots(1, 1, figsize = (20, 20))
+    blocks.plot(metric, ax = ax, cmap = 'viridis')
+    f.savefig('./plot.png', dpi = 300)
+    
+    
     
     

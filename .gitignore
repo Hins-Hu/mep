@@ -1,7 +1,18 @@
+# Dev
+test*
+
+
+# Folders
 custom_files
 docker*
 cache
 
+# Private
 __*
+.*
 
-test*
+# Credentials
+token
+
+# Plots
+*.png
