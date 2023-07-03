@@ -1,13 +1,40 @@
 import requests
-import osmnx as ox
-import geopandas as gpd
 import numpy as np
+import cenpy
+import matplotlib.pyplot as plt
+import geopandas as gp
+import overpy
 
 
-def get_isochrones(loc_list):
 
+def get_places_polygon(polygon, tag = "[amenity=restaurant]"):
+    
+    # Convert the nested-list polygon to a one-line string format
+    polygon_str = ""
+    for ind, (lon, lat) in enumerate(polygon):
+        if ind != 0:
+            polygon_str += " "
+        polygon_str += str(lat)
+        polygon_str += " "
+        polygon_str += str(lon)
+
+    # Construct a one-line argument for the overpass api
+    arg_polygon = "node(poly: '" + polygon_str + "')"
+    arg_tag =  tag
+    arg_end = "out;"
+    arg = arg_polygon + arg_tag + ";" + arg_end
+    
+    overpass_api = overpy.Overpass()
+    result = overpass_api.query(arg)
+    
+    return result
+    
+
+def get_isochrones(loc_list, mode = "pedestrian", time = 15):
+    
+    
     url = "https://valhalla1.openstreetmap.de/isochrone"
-    json_input = {"locations": loc_list,"costing":"pedestrian","contours":[{"time":15.0,"color":"ff0000"}]}
+    json_input = {"locations": loc_list,"costing":mode,"contours":[{"time":time,"color":"ff0000"}]}
 
     result = requests.get(url, json = json_input)
     data = result.json()
@@ -16,6 +43,10 @@ def get_isochrones(loc_list):
 
     return polygon
 
+
+def generate_census_blocks():
+    
+    Chatt = cenpy.products.Decennial2010().from_place('Chattanooga, TN', level='block')
 
 
 def generate_square_centroids(bbox, square_size = 0.01):

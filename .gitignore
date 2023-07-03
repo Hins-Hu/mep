@@ -1,4 +1,7 @@
 custom_files
 docker*
+cache
 
 __*
+
+test*
