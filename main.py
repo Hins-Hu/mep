@@ -1,9 +1,8 @@
 
 import utils
-import time
 import numpy as np
 import sys
-import json
+from concurrent.futures import ThreadPoolExecutor
 
 
 # Parameters
@@ -33,18 +32,18 @@ url_TIGERweb = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/ti
 
 
 
-
 blocks = utils.get_census_blocks(city)
 block_geoids = blocks['GEOID']
 
 # Initialize the array of opportunities
 O_itj = np.zeros((len(blocks), len(isochrones), len(activities)))
 
-# Initialize the time tracker
-s_time = time.time()
 
-#TODO: Need to be changed when multi-thread is enabled
-for i, geoid in enumerate(block_geoids):
+
+# Define the executable function for multithreading
+def compute_one_block(i):
+    
+    geoid = block_geoids[i]
     
     # Monitor the progress
     print("Now at i = ", i)
@@ -55,11 +54,6 @@ for i, geoid in enumerate(block_geoids):
 
     for t, interval in enumerate(isochrones):
         
-        # Time tracker due to the demo Valhalla server
-        t_time = time.time()
-        time.sleep(max(0, 1.05 - t_time + s_time))
-        s_time = time.time()
-        
         polygon = utils.get_isochrones(loc_list, modes[0], interval)
         
         if polygon != None:
@@ -69,8 +63,17 @@ for i, geoid in enumerate(block_geoids):
                     O_itj[i][t][j] = len(places.nodes)
                 else:
                     O_itj[i][t][j] = len(places.nodes) - O_itj[i][t-1][j]        
-
+               
+               
+# Enable multithreading
+with ThreadPoolExecutor(max_workers = 12) as executor:
+    for i, _ in enumerate(block_geoids):
+        executor.submit(compute_one_block, i)
         
+#  wait for all tasks to complete before the main thread continues
+executor.shutdown()
+
+
 # Compute the MEP metric
 # TODO: Use the correct formula once the debugging is done
 blocks['Quant'] = np.sum(O_itj, axis = (1, 2))

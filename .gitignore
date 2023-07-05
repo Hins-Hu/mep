@@ -1,8 +1,8 @@
 # Dev
 test*
 
-# Cache
-out*
+# Logs
+*.log
 
 # Folders
 custom_files
