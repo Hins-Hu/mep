@@ -1,6 +1,8 @@
 # Dev
 test*
 
+# Cache
+out*
 
 # Folders
 custom_files

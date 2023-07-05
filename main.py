@@ -2,6 +2,8 @@
 import utils
 import time
 import numpy as np
+import sys
+import json
 
 
 # Parameters
@@ -33,7 +35,7 @@ url_TIGERweb = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/ti
 
 
 blocks = utils.get_census_blocks(city)
-block_geoids = blocks['GEOID'][:3]
+block_geoids = blocks['GEOID']
 
 # Initialize the array of opportunities
 O_itj = np.zeros((len(blocks), len(isochrones), len(activities)))
@@ -44,6 +46,10 @@ s_time = time.time()
 #TODO: Need to be changed when valhalla local server is built
 for i, geoid in enumerate(block_geoids):
     
+    # Monitor the progress
+    print("Now at i = ", i)
+    sys.stdout.flush()
+    
     centroid_lat, centroid_lon = utils.get_census_block_centroid(geoid)
     loc_list = [{'lat': centroid_lat, 'lon': centroid_lon}]
 
@@ -51,19 +57,19 @@ for i, geoid in enumerate(block_geoids):
         
         # Time tracker due to the demo Valhalla server
         t_time = time.time()
-        time.sleep(max(0, 1 - t_time + s_time))
+        time.sleep(max(0, 1.05 - t_time + s_time))
         s_time = time.time()
-        
         
         polygon = utils.get_isochrones(loc_list, modes[0], interval)
         
-        for j, a in enumerate(activities):
+        if polygon != None:
+            for j, a in enumerate(activities):
+                places = utils.get_places_OSM(polygon, a)
+                if t == 0:
+                    O_itj[i][t][j] = len(places.nodes)
+                else:
+                    O_itj[i][t][j] = len(places.nodes) - O_itj[i][t-1][j]        
 
-            places = utils.get_places_OSM(polygon, a)
-            if t == 0:
-                O_itj[i][t][j] = len(places.nodes)
-            else:
-                O_itj[i][t][j] = len(places.nodes) - O_itj[i][t-1][j]
         
 # Compute the MEP metric
 # TODO: Use the correct formula once the debugging is done
