@@ -43,7 +43,7 @@ O_itj = np.zeros((len(blocks), len(isochrones), len(activities)))
 # Initialize the time tracker
 s_time = time.time()
 
-#TODO: Need to be changed when valhalla local server is built
+#TODO: Need to be changed when multi-thread is enabled
 for i, geoid in enumerate(block_geoids):
     
     # Monitor the progress

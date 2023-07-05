@@ -51,17 +51,14 @@ def get_places_OSM(polygon, tags = ["[amenity=restaurant]"]):
     return result
     
 
-#TODO: Need to be changed when valhalla local server is built
 def get_isochrones(loc_list, mode = "bus", time = 15):
     
-    
-    url = "https://valhalla1.openstreetmap.de/isochrone"
     
     url_local = "http://0.0.0.0:8002/isochrone"
     
     json_input = {"locations": loc_list,"costing":mode,"contours":[{"time":time,"color":"ff0000"}]}
 
-    result = requests.get(url, json = json_input)
+    result = requests.get(url_local, json = json_input)
 
     try:
         data = result.json()
