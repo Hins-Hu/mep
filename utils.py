@@ -27,8 +27,24 @@ def get_census_block_centroid(geoid):
     return centroid_lat, centroid_lon
 
 
+def get_places_city_OSM(city = "Chattanooga", tags = ["[amenity=restaurant]"]):
+    
+    arg = f"area[name = {city}];"
+    for tag in tags:
+        node = "node(area)"
+        node += tag
+        node += ";"
+        arg += node
+    arg += "out;" 
+    
+    overpass_api = overpy.Overpass()
+    result = overpass_api.query(arg)
+    
+    return result
+    
+    
 
-def get_places_OSM(polygon, tags = ["[amenity=restaurant]"]):
+def get_places_polygon_OSM(polygon, tags = ["[amenity=restaurant]"]):
     
     # Convert the nested-list polygon to a one-line string format
     polygon_str = ""

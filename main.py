@@ -5,10 +5,16 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 
 
+
+
+
 # Parameters
 isochrones = [5, 10, 15, 20]
 modes = ['multimodal']
 city = 'Chattanooga, TN'
+
+
+
 activities = [['[Healthcare]','[amenity=restaurant]']]
 
 N_star = ...
