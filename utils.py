@@ -40,10 +40,13 @@ def get_places_OSM(polygon, tags = ["[amenity=restaurant]"]):
         polygon_str += str(lon)
 
     # Construct a one-line argument for the overpass api
-    arg_polygon = f"node(poly: '{polygon_str}')"
-    arg_tag =  ''.join(tags)
-    arg_end = "out;"
-    arg = arg_polygon + arg_tag + ";" + arg_end
+    arg = "("    
+    for tag in tags:
+        node = f"node(poly: '{polygon_str}')"
+        node += tag
+        node += ";"
+        arg += node
+    arg += ");out;" 
     
     overpass_api = overpy.Overpass()
     result = overpass_api.query(arg)

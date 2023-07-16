@@ -5,6 +5,7 @@ test*
 *.log
 
 # Folders
+gtfs*
 custom_files
 docker*
 cache

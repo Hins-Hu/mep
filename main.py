@@ -7,9 +7,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 # Parameters
 isochrones = [5, 10, 15, 20]
-modes = ['bus']
+modes = ['multimodal']
 city = 'Chattanooga, TN'
-activities = [['[sport]'], ['[Healthcare]']]
+activities = [['[Healthcare]','[amenity=restaurant]']]
 
 N_star = ...
 freqencies = []
@@ -46,7 +46,7 @@ def compute_one_block(i):
     geoid = block_geoids[i]
     
     # Monitor the progress
-    print("Now at i = ", i)
+    # print("Now at i = ", i)
     sys.stdout.flush()
     
     centroid_lat, centroid_lon = utils.get_census_block_centroid(geoid)
