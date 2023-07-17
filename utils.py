@@ -29,12 +29,14 @@ def get_census_block_centroid(geoid):
 
 def get_places_city_OSM(city = "Chattanooga", tags = ["[amenity=restaurant]"]):
     
-    arg = f"area[name = {city}];"
+    arg = f"area[name = {city}]->.city;"
+    arg += "("
     for tag in tags:
-        node = "node(area)"
+        node = "node(area.city)"
         node += tag
         node += ";"
         arg += node
+    arg += ");"
     arg += "out;" 
     
     overpass_api = overpy.Overpass()
@@ -124,7 +126,7 @@ def generate_square_centroids(bbox, square_size = 0.01):
 
     
 
-def mep_computation(O_tj, N_star, N, f, isochrones, e, c, alpha = -0.5, beta = -0.08, sigma = -0.5):  
+def mep_computation(O_tj, N_star, N, freq, isochrones, e, c, alpha = -0.5, beta = -0.08, sigma = -0.5):  
     
     """_summary_
 
@@ -132,7 +134,7 @@ def mep_computation(O_tj, N_star, N, f, isochrones, e, c, alpha = -0.5, beta = -
         O_tj (np.ndarray): O_tj[t][j] =  # of opportunities of type j in the polygon within t time  
         N_star (int): A factor. The total number of benchmark opportunities across multiple cities (for example, the number of meal opportunities)
         N (np.ndarray): N[j] = the total # of opportunities of activity j
-        f (np.ndarray): f[j] = the frequency that people access opportunities of activity j
+        freq (np.ndarray): f[j] = the frequency that people access opportunities of activity j
         isochrones (list): A list of isochrones (e.g., [10, 20, 30, 40])
         e (float): The energy intensity (kWh per passenger-mile)
         c (float): The cost (dollar per passenger-mile)
@@ -141,13 +143,13 @@ def mep_computation(O_tj, N_star, N, f, isochrones, e, c, alpha = -0.5, beta = -
         sigma (float, optional): weighing factors. Defaults to -0.5.
     """
     
-    O_t = O_tj @ (f / N) * (N_star * sum(f))
+    O_t = O_tj @ (freq / N) * (N_star * sum(freq))
     
-    M_t = np.repeat(alpha * e, len(isochrones)) + beta * isochrones + np.repeat(sigma * c, len(isochrones))
+    M_t = np.repeat(alpha * e, len(isochrones)) + beta * np.array(isochrones) + np.repeat(sigma * c, len(isochrones))
     
-    np.insert(O_t, 0, 0)
+    O_t = np.insert(O_t, 0, 0)
     mep = 0
-    for ind, o1, o2 in enumerate(zip(O_t[:-1], O_t[1:])):
+    for ind, (o1, o2) in enumerate(zip(O_t[:-1], O_t[1:])):
         mep += (o2 - o1) * np.exp(M_t[ind])
         
     return mep

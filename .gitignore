@@ -9,6 +9,7 @@ gtfs*
 custom_files
 docker*
 cache
+data
 
 # Private
 __*
