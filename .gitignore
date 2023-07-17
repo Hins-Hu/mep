@@ -10,6 +10,7 @@ custom_files
 docker*
 cache
 data
+figure
 
 # Private
 __*

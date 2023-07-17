@@ -159,7 +159,7 @@ def visualization(blocks, metric):
     
     f, ax = plt.subplots(1, 1, figsize = (20, 20))
     blocks.plot(metric, ax = ax, cmap = 'viridis')
-    f.savefig('./plot_2.png', dpi = 300)
+    f.savefig('figure/plot.png', dpi = 300)
     
     
     
