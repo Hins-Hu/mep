@@ -158,9 +158,23 @@ def mep_computation(O_tj, N_star, N, freq, isochrones, e, c, alpha = -0.5, beta 
 def visualization(blocks, metric):
     
     f, ax = plt.subplots(1, 1, figsize = (20, 20))
-    blocks.plot(metric, ax = ax, cmap = 'viridis')
+    blocks.plot(metric, ax = ax, cmap = 'viridis', legend=True, legend_kwds={'shrink': 0.5, 'label':'MEP'})
+    plt.tick_params(left = False, bottom = False, labelleft = False, labelbottom = False)
     f.savefig('figure/plot.png', dpi = 300)
     
     
     
+#TODO: This function is a showcase of how to use the census api
+#TODO: The population info within a census block seems to be not available
+def get_info_census_api():
+    
+    """
+    Check the governmental website for the definition of variables
+    """
+    
+    
+    URL = 'https://api.census.gov/data/2010/dec/sf1'
+    params = {'get': 'P001001', 'for': 'block:*', 'in': ['state:47', 'county:065', 'tract:011201'], 'key': '0081e14f785988a07aee9a14c13add4679c1d157'}
+    result = requests.get(url = URL, params = params)
+    result.json()
     

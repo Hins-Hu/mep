@@ -127,6 +127,15 @@ blocks['MEP'] = mep
 # Output data
 blocks.to_file("chatt_census_blocks.geojson", driver='GeoJSON')
 
+
+# Normalization
+mep_max = max(mep)
+mep_min = min(mep)
+mep = mep_min + (mep - mep_min) / mep_max
+blocks['MEP'] = mep
+blocks.to_file("chatt_census_blocks_normalized.geojson", driver='GeoJSON')
+
+
 # Generate the plot
 utils.visualization(blocks, 'MEP')
 
