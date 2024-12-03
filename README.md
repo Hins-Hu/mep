@@ -25,3 +25,13 @@ Use the community image built by [gis-ops](https://github.com/gis-ops/docker-val
 + To enable some features related to transit in Valhalla
     + you need to download the GTFS data for the region you are interested in. Check the website of the local transit agency.
     + you need to specifically the section called `Build the image` in [gis-ops](https://github.com/gis-ops/docker-valhalla).
+
+# Visualization of the Mobility Energy Performance (MEP) Score per Cencus Block
++ The MEP-enhanced map with a mobility-on-demand-only system
+![Vis for MoD-only Systems](plot_MoD.png)
+
++ The MEP-enhanced map with a transit-only system
+![Vis for Transit-only Systems](plot_transit_old.png)
+
++ The MEP-enhanced map with a multi-modal system
+![Vis for Multi-modal Systems](plot_multi.png)
